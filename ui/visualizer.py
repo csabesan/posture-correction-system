@@ -1,22 +1,12 @@
 """
-visualizer.py - Visual Feedback Module
-
 This module handles all visual feedback rendering for the posture
 correction system. It displays posture classification results and
 angle measurements on the video frame.
-
-This module only DISPLAYS results - it does NOT compute posture logic.
-
-CPS843 - Computer Vision Project
 """
 
 import cv2
 
-
-# =============================================================================
 # VISUAL CONFIGURATION
-# =============================================================================
-
 # Colors in BGR format (OpenCV standard)
 COLOR_GREEN = (0, 255, 0)      # Good posture indicator
 COLOR_RED = (0, 0, 255)        # Bad posture indicator
@@ -33,11 +23,6 @@ FONT_THICKNESS_SMALL = 1
 STATUS_POSITION = (20, 40)     # "GOOD/BAD POSTURE" text
 NECK_ANGLE_POSITION = (20, 80) # Neck angle display
 BACK_ANGLE_POSITION = (20, 110) # Back angle display
-
-
-# =============================================================================
-# MAIN VISUALIZATION FUNCTION
-# =============================================================================
 
 def draw_feedback(frame, posture_data: dict):
     """
@@ -68,9 +53,7 @@ def draw_feedback(frame, posture_data: dict):
     back_angle = posture_data["back_angle"]
     is_good = posture_data["is_good"]
     
-    # -----------------------------------------------------------------
     # 1. Draw posture status text
-    # -----------------------------------------------------------------
     if is_good:
         status_text = "GOOD POSTURE"
         status_color = COLOR_GREEN
@@ -86,7 +69,7 @@ def draw_feedback(frame, posture_data: dict):
         (STATUS_POSITION[0] + 2, STATUS_POSITION[1] + 2),
         FONT,
         FONT_SCALE_LARGE,
-        (0, 0, 0),  # Black shadow
+        (0, 0, 0), 
         FONT_THICKNESS_LARGE + 1
     )
     # Main text
@@ -100,9 +83,7 @@ def draw_feedback(frame, posture_data: dict):
         FONT_THICKNESS_LARGE
     )
     
-    # -----------------------------------------------------------------
     # 2. Draw neck angle value
-    # -----------------------------------------------------------------
     neck_text = f"Neck Angle: {neck_angle:.1f} deg"
     
     cv2.putText(
@@ -115,9 +96,7 @@ def draw_feedback(frame, posture_data: dict):
         FONT_THICKNESS_SMALL
     )
     
-    # -----------------------------------------------------------------
     # 3. Draw back angle value
-    # -----------------------------------------------------------------
     back_text = f"Back Angle: {back_angle:.1f} deg"
     
     cv2.putText(
