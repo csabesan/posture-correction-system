@@ -1,44 +1,24 @@
 """
-main.py - Real-Time Posture Correction System
-
 Main entry point for the CPS843 posture correction application.
 This module integrates pose detection, posture classification, and
 visual feedback into a real-time video processing pipeline.
-
-Pipeline:
-    Webcam → MediaPipe Pose → Keypoint Extraction → 
-    Angle Computation → Threshold Classification → 
-    Visual Feedback Overlay
-
-CPS843 - Computer Vision Project
 """
 
 import cv2
 import time
-
-# Import project modules
 from pose.pose_detector import get_keypoints, release as release_pose
 from logic.posture_logic import classify_posture
 from ui.visualizer import draw_feedback
 
-
-# =============================================================================
 # CONFIGURATION
-# =============================================================================
-
 WINDOW_NAME = "Posture Correction System - CPS843"
-CAMERA_INDEX = 0  # Default webcam (change if using external camera)
+CAMERA_INDEX = 0  # Default webcam
 
 # FPS display settings
 FPS_POSITION = (20, 150)
-FPS_COLOR = (255, 255, 0)  # Cyan
+FPS_COLOR = (255, 255, 0)
 FPS_FONT = cv2.FONT_HERSHEY_SIMPLEX
 FPS_SCALE = 0.6
-
-
-# =============================================================================
-# MAIN APPLICATION
-# =============================================================================
 
 def main():
     """
@@ -60,7 +40,6 @@ def main():
     # Initialize webcam capture
     cap = cv2.VideoCapture(CAMERA_INDEX)
     
-    # Check if webcam opened successfully
     if not cap.isOpened():
         print("ERROR: Could not open webcam.")
         print("Please check camera permissions and connection.")
@@ -70,14 +49,9 @@ def main():
     prev_time = time.time()
     fps = 0.0
     
-    # -----------------------------------------------------------------
-    # Main processing loop
-    # -----------------------------------------------------------------
     while cap.isOpened():
         # Read frame from webcam
         ret, frame = cap.read()
-        
-        # Check if frame was captured successfully
         if not ret:
             print("ERROR: Failed to capture frame.")
             break
@@ -85,38 +59,26 @@ def main():
         # Flip frame horizontally for mirror effect (more intuitive for user)
         frame = cv2.flip(frame, 1)
         
-        # -------------------------------------------------------------
         # Step 1: Get pose keypoints from frame
-        # -------------------------------------------------------------
         keypoints = get_keypoints(frame)
         
-        # -------------------------------------------------------------
         # Step 2 & 3: If pose detected, classify and visualize
-        # -------------------------------------------------------------
         if keypoints is not None:
-            # Step 2: Classify posture using geometric analysis
             posture_data = classify_posture(keypoints)
-            
-            # Step 3: Draw visual feedback on frame
             draw_feedback(frame, posture_data)
-            
-            # Optional: Draw keypoint markers for debugging
             _draw_keypoints(frame, keypoints)
         else:
-            # No pose detected - show message
             cv2.putText(
                 frame,
                 "No pose detected - please stand in view",
                 (20, 40),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.7,
-                (0, 165, 255),  # Orange
+                (0, 165, 255),
                 2
             )
         
-        # -------------------------------------------------------------
         # Step 4: Calculate and display FPS
-        # -------------------------------------------------------------
         current_time = time.time()
         fps = 1.0 / (current_time - prev_time)
         prev_time = current_time
@@ -132,22 +94,15 @@ def main():
             1
         )
         
-        # -------------------------------------------------------------
         # Step 5: Display the frame
-        # -------------------------------------------------------------
         cv2.imshow(WINDOW_NAME, frame)
         
-        # -------------------------------------------------------------
         # Step 6: Check for quit key
-        # -------------------------------------------------------------
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             print("\nExiting...")
             break
     
-    # -----------------------------------------------------------------
-    # Cleanup
-    # -----------------------------------------------------------------
     print("Releasing resources...")
     cap.release()
     cv2.destroyAllWindows()
@@ -179,7 +134,6 @@ def _draw_keypoints(frame, keypoints: dict):
         # Draw filled circle at keypoint location
         cv2.circle(frame, (x, y), 6, color, -1)
         
-        # Draw keypoint label
         cv2.putText(
             frame,
             name,
@@ -237,11 +191,6 @@ def _draw_keypoints(frame, keypoints: dict):
         (255, 0, 255),
         2
     )
-
-
-# =============================================================================
-# ENTRY POINT
-# =============================================================================
 
 if __name__ == "__main__":
     main()
